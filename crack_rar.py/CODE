@@ -1,0 +1,56 @@
+import subprocess
+import os
+
+def crack_rar_con_winrar():
+    print("=== Crackeo RAR con WinRAR instalado ===")
+    rar_path = input("Ruta del archivo .rar: ").strip('"')
+    extract_path = "extraido"
+
+    if not os.path.isfile(rar_path):
+        print("Archivo .rar no encontrado.")
+        input("Presiona Enter para salir...")
+        return
+
+    if not os.path.exists(extract_path):
+        os.makedirs(extract_path)
+
+    winrar_path = "C:\\Program Files\\WinRAR\\WinRAR.exe"
+
+    if not os.path.isfile(winrar_path):
+        print("WinRAR no encontrado en la ruta predeterminada. Asegúrate de que esté instalado y la ruta sea correcta.")
+        input("Presiona Enter para salir...")
+        return
+
+    # Intenta del 1 al 999999
+    for i in range(1, 1000000):
+        password = str(i)
+        comando = [
+            winrar_path,
+            "x", "-ibck",  # Extraer en segundo plano
+            "-y",  # Suprimir todas las preguntas y respuestas
+            f"-p{password}",  # Contraseña actual
+            rar_path,
+            extract_path
+        ]
+
+        try:
+            resultado = subprocess.run(comando, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout = resultado.stdout.decode('utf-8')
+            stderr = resultado.stderr.decode('utf-8')
+
+            if b"All OK" in resultado.stdout:
+                print(f"\n[✓] ¡Contraseña encontrada!: {password}")
+                input("Presiona Enter para salir...")
+                return
+            else:
+                print(f"[X] {password} incorrecta")
+        except Exception as e:
+            print(f"Error al intentar contraseña {password}: {e}")
+            input("Presiona Enter para salir...")
+            return
+
+    print("No se encontró la contraseña.")
+    input("Presiona Enter para salir...")
+
+if __name__ == "__main__":
+    crack_rar_con_winrar()
